@@ -1,9 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.navigation.safeargs)
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY", "")
 
 android {
     namespace = "com.jarvis.movietracker"
@@ -22,7 +33,7 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            buildConfigField("String", "TMDB_API_KEY", "\"a58205333e3233f68791259fd4509620\"")
+            buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
             buildConfigField("String", "TMDB_BASE_URL", "\"https://api.themoviedb.org/3/\"")
         }
         release {
@@ -31,7 +42,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "TMDB_API_KEY", "\"YOUR_API_KEY_HERE\"")
+            buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
             buildConfigField("String", "TMDB_BASE_URL", "\"https://api.themoviedb.org/3/\"")
         }
     }
