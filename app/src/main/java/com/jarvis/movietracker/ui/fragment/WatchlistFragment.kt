@@ -9,11 +9,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jarvis.movietracker.databinding.FragmentWatchlistBinding
+import com.jarvis.movietracker.R
 import com.jarvis.movietracker.ui.adapter.WatchlistAdapter
 import com.jarvis.movietracker.ui.viewmodel.WatchlistViewModel
 import com.jarvis.movietracker.data.repository.WatchlistRepository
 import com.jarvis.movietracker.data.local.MovieTrackerDatabase
-import com.jarvis.movietracker.R
 
 class WatchlistFragment : Fragment() {
     private var _binding: FragmentWatchlistBinding? = null
@@ -36,7 +36,7 @@ class WatchlistFragment : Fragment() {
 
         val database = MovieTrackerDatabase.getInstance(requireContext())
         val repository = WatchlistRepository(database)
-        viewModel = ViewModelProvider(this, object : androidx.lifecycle.ViewModelProvider.Factory {
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T =
                 WatchlistViewModel(repository) as T
         })[WatchlistViewModel::class.java]

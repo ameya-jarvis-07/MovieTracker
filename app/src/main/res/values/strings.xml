@@ -18,6 +18,9 @@
     <string name="release_date">Release Date</string>
     <string name="overview">Overview</string>
     <string name="recommendations_title">Recommendations</string>
+    <string name="movie_release_prefix">Release: %1$s</string>
+    <string name="movie_language_prefix">Language: %1$s</string>
+    <string name="na">N/A</string>
 
     <!-- Watchlist -->
     <string name="watchlist_empty">Your watchlist is empty</string>

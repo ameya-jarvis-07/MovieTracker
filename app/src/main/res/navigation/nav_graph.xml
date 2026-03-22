@@ -38,7 +38,7 @@
         tools:layout="@layout/fragment_movie_details">
         <argument
             android:name="movieId"
-            app:type="integer" />
+            app:argType="integer" />
         <action
             android:id="@+id/action_details_to_details"
             app:destination="@id/movieDetailsFragment" />

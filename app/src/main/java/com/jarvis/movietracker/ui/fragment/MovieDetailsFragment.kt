@@ -15,12 +15,16 @@ import com.jarvis.movietracker.data.repository.MovieRepository
 import com.jarvis.movietracker.data.repository.ReviewRepository
 import com.jarvis.movietracker.data.repository.WatchlistRepository
 import com.jarvis.movietracker.data.local.MovieTrackerDatabase
-import com.jarvis.movietracker.data.local.entities.WatchlistEntity
 import com.jarvis.movietracker.utils.Result
 import com.jarvis.movietracker.utils.loadImage
 import com.jarvis.movietracker.R
+import java.util.Locale
 
 class MovieDetailsFragment : Fragment() {
+    private companion object {
+        const val ARG_MOVIE_ID = "movieId"
+    }
+
     private var _binding: FragmentMovieDetailsBinding? = null
     private val binding get() = _binding!!
 
@@ -40,17 +44,27 @@ class MovieDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        movieId = arguments?.getInt("movieId") ?: 0
-        if (movieId == 0) return
+        movieId = arguments?.getInt(ARG_MOVIE_ID) ?: 0
+        if (movieId == 0) {
+            binding.progressBar.visibility = View.GONE
+            binding.errorMessage.visibility = View.VISIBLE
+            binding.errorMessage.text = getString(R.string.error_generic)
+            return
+        }
 
         val database = MovieTrackerDatabase.getInstance(requireContext())
         val movieRepository = MovieRepository(database)
         val watchlistRepository = WatchlistRepository(database)
         val reviewRepository = ReviewRepository(database)
 
-        viewModel = ViewModelProvider(this, object : androidx.lifecycle.ViewModelProvider.Factory {
-            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T =
-                MovieDetailsViewModel(movieRepository, watchlistRepository, reviewRepository) as T
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                return requireNotNull(
+                    modelClass.cast(
+                        MovieDetailsViewModel(movieRepository, watchlistRepository, reviewRepository)
+                    )
+                )
+            }
         })[MovieDetailsViewModel::class.java]
 
         setupRecommendationsList()
@@ -102,22 +116,32 @@ class MovieDetailsFragment : Fragment() {
     private fun observeMovieDetails() {
         viewModel.movieDetails.observe(viewLifecycleOwner) { result ->
             when (result) {
-                is Result.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.errorMessage.visibility = View.GONE
+                }
                 is Result.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.errorMessage.visibility = View.GONE
                     val movie = result.data
                     binding.apply {
                         movieTitle.text = movie.title
                         movieOverview.text = movie.overview
-                        movieRating.text = String.format("%.1f", movie.voteAverage)
-                        movieReleaseDate.text = "Release: ${movie.releaseDate ?: "N/A"}"
-                        movieLanguage.text = "Language: ${movie.originalLanguage?.uppercase() ?: "N/A"}"
+                        movieRating.text = String.format(Locale.getDefault(), "%.1f", movie.voteAverage)
+                        movieReleaseDate.text = getString(
+                            R.string.movie_release_prefix,
+                            movie.releaseDate ?: getString(R.string.na)
+                        )
+                        movieLanguage.text = getString(
+                            R.string.movie_language_prefix,
+                            movie.originalLanguage?.uppercase() ?: getString(R.string.na)
+                        )
                         moviePoster.loadImage(movie.posterPath)
                     }
                 }
                 is Result.Error -> binding.errorMessage.apply {
                     visibility = View.VISIBLE
-                    text = result.exception.message
+                    text = result.exception.message ?: getString(R.string.error_generic)
                 }
             }
         }
@@ -143,7 +167,11 @@ class MovieDetailsFragment : Fragment() {
 
     private fun observeWatchlistStatus() {
         viewModel.isInWatchlist.observe(viewLifecycleOwner) { inWatchlist ->
-            binding.addToWatchlistButton.text = if (inWatchlist) "Remove from Watchlist" else "Add to Watchlist"
+            binding.addToWatchlistButton.text = if (inWatchlist) {
+                getString(R.string.remove_from_watchlist)
+            } else {
+                getString(R.string.add_to_watchlist)
+            }
             binding.addToWatchlistButton.isSelected = inWatchlist
         }
 

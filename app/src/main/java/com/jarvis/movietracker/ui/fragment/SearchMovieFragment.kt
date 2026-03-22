@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.jarvis.movietracker.R
 import com.jarvis.movietracker.databinding.FragmentSearchMovieBinding
 import com.jarvis.movietracker.ui.adapter.MovieAdapter
 import com.jarvis.movietracker.ui.viewmodel.SearchMovieViewModel
@@ -54,7 +55,7 @@ class SearchMovieFragment : Fragment() {
                 putInt("movieId", movie.id)
             }
             findNavController().navigate(
-                com.jarvis.movietracker.R.id.action_search_to_details,
+                R.id.action_search_to_details,
                 bundle
             )
         }
