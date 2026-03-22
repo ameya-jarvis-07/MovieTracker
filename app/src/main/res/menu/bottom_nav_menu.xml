@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/searchMovieFragment"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="Search" />
+    <item
+        android:id="@+id/watchlistFragment"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="Watchlist" />
+    <item
+        android:id="@+id/recommendationsFragment"
+        android:icon="@drawable/ic_launcher_foreground"
+        android:title="Recommendations" />
+</menu>
+
